@@ -1,5 +1,8 @@
+// Vite incorpora esta variable al compilar; se quitan barras finales para unir las rutas.
 const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:3000/api").replace(/\/+$/, "");
 
+// Centraliza Fetch, la conversión JSON y los errores para todos los componentes.
+// signal es opcional y permite cancelar una petición desde quien la inicia.
 async function request(path, { method = "GET", body, signal } = {}) {
     let response;
 
@@ -25,6 +28,7 @@ async function request(path, { method = "GET", body, signal } = {}) {
 
     const data = await response.json().catch(() => null);
 
+    // Fetch no lanza un error por estados HTTP como 400 o 500: hay que comprobarlos.
     if (!response.ok) {
         throw new Error(
             typeof data?.error === "string"
@@ -40,6 +44,7 @@ async function request(path, { method = "GET", body, signal } = {}) {
     return data;
 }
 
+// URLSearchParams codifica la etiqueta para que espacios y símbolos no rompan la URL.
 export function getLinks(tag = "", signal) {
     const query = tag
         ? `?${new URLSearchParams({ tag }).toString()}`
@@ -48,14 +53,17 @@ export function getLinks(tag = "", signal) {
     return request(`/links${query}`, { signal });
 }
 
+// Los identificadores se codifican al incorporarlos como segmentos de la ruta.
 export function getLink(id, signal) {
     return request(`/links/${encodeURIComponent(id)}`, { signal });
 }
 
+// Opciones disponibles para el filtro del listado.
 export function getTags(signal) {
     return request("/tags", { signal });
 }
 
+// Los POST envían los datos como JSON y devuelven la respuesta del backend.
 export function createLink(data) {
     return request("/links", {
         method: "POST",
@@ -63,6 +71,7 @@ export function createLink(data) {
     });
 }
 
+// Consulta los comentarios de un enlace concreto.
 export function getComments(linkId, signal) {
     return request(
         `/links/${encodeURIComponent(linkId)}/comments`,
@@ -70,6 +79,7 @@ export function getComments(linkId, signal) {
     );
 }
 
+// Devuelve el comentario guardado para añadirlo al estado de la página.
 export function createComment(linkId, data) {
     return request(`/links/${encodeURIComponent(linkId)}/comments`, {
         method: "POST",
@@ -77,6 +87,7 @@ export function createComment(linkId, data) {
     });
 }
 
+// Envía +1 o -1; la respuesta contiene la puntuación total confirmada.
 export function voteLink(linkId, value) {
     return request(`/links/${encodeURIComponent(linkId)}/vote`, {
         method: "POST",

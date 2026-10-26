@@ -1,3 +1,4 @@
+// Solo permite enlaces externos HTTP/HTTPS; una URL inválida no se vuelve clicable.
 function getSafeUrl(url) {
     try {
         const parsed = new URL(url);
@@ -10,6 +11,7 @@ function getSafeUrl(url) {
     }
 }
 
+// Contenido compartido entre la tarjeta del listado y la página de detalle.
 export default function LinkContent({ link }) {
     const externalUrl = getSafeUrl(link.url);
 

@@ -1,3 +1,5 @@
+// Muestra los comentarios recibidos. key identifica cada elemento para React.
+// La fecha se presenta en formato local; dateTime conserva el valor original.
 export default function CommentList({ comments }) {
     if (comments.length === 0) {
         return <p>Todavía no hay comentarios.</p>;

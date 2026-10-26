@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
+// Habilita React y la actualización de componentes durante el desarrollo con Vite.
 export default defineConfig({
   plugins: [react()],
 })

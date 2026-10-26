@@ -1,3 +1,5 @@
+// El padre controla el valor elegido y recibe la selección mediante onChange.
+// Este componente solo muestra las opciones; no consulta la API.
 export default function TagFilter({ tags, value, onChange, disabled = false, }) {
     return (
         <div>

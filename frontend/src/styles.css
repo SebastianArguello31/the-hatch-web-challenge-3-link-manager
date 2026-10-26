@@ -1,3 +1,4 @@
+/* Base visual: fuente, colores y altura de línea para toda la interfaz. */
 :root {
   font-family: system-ui, sans-serif;
   color: #172033;
@@ -10,6 +11,7 @@
   box-sizing: border-box;
 }
 
+/* Respeta hidden aunque otra regla asigne display al elemento. */
 [hidden] {
   display: none !important;
 }
@@ -67,11 +69,13 @@ button:disabled {
   cursor: wait;
 }
 
+/* Hace visible el elemento activo al navegar con teclado. */
 :focus-visible {
   outline: 3px solid #2563eb;
   outline-offset: 3px;
 }
 
+/* Encabezado y contenedor central compartidos por las dos vistas. */
 .site-header {
   padding: 2rem max(1rem, calc((100% - 1100px) / 2));
   background: #172033;
@@ -91,6 +95,7 @@ button:disabled {
   padding: 1.5rem 1rem 3rem;
 }
 
+/* Superficies de los formularios, el detalle y las tarjetas del listado. */
 .panel,
 .link-card {
   padding: 1.5rem;
@@ -123,6 +128,7 @@ small,
   color: #536078;
 }
 
+/* Ajusta automáticamente el número de columnas al espacio disponible. */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
@@ -134,6 +140,7 @@ small,
   margin-top: 0;
 }
 
+/* Las etiquetas y los controles pueden saltar de línea en pantallas estrechas. */
 .tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -167,12 +174,14 @@ small,
   overflow-wrap: anywhere;
 }
 
+/* Conserva los saltos de línea escritos en descripciones y comentarios. */
 .comment-list p,
 #detail-description,
 .link-description {
   white-space: pre-wrap;
 }
 
+/* Destaca los mensajes de error que están visibles. */
 [role="alert"]:not([hidden]) {
   padding: 0.75rem;
   background: #fff1f2;
@@ -180,6 +189,7 @@ small,
   border-left: 4px solid #be123c;
 }
 
+/* Reduce espacios y amplía los botones en dispositivos pequeños. */
 @media (max-width: 600px) {
   .panel,
   .link-card {

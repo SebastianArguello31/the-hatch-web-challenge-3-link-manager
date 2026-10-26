@@ -1,12 +1,16 @@
 import { useRef, useState } from "react";
 import { createLink } from "../services/api.js";
 
+// Guarda un enlace y avisa al padre mediante la función onCreated.
 export default function LinkForm({ onCreated }) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
+    // La ref bloquea envíos repetidos de inmediato, sin esperar otro renderizado.
+    // saving, en cambio, actualiza los botones y campos visibles.
     const submitting = useRef(false);
 
     async function handleSubmit(event) {
+        // Evita el envío HTML tradicional, que recargaría la página.
         event.preventDefault();
 
         if (submitting.current) {
@@ -14,12 +18,14 @@ export default function LinkForm({ onCreated }) {
         }
 
         const form = event.currentTarget;
+        // FormData lee los campos por su atributo name.
         const formData = new FormData(form);
 
         const data = {
             title: formData.get("title").trim(),
             url: formData.get("url").trim(),
             description: formData.get("description").trim(),
+            // Convierte el texto separado por comas en el arreglo esperado por la API.
             tags: formData
                 .get("tags")
                 .split(",")
@@ -53,6 +59,7 @@ export default function LinkForm({ onCreated }) {
             setSaving(false);
         }
 
+        // Solo limpia el formulario y notifica al padre después de guardar con éxito.
         form.reset();
         onCreated(createdLink);
     }

@@ -2,6 +2,8 @@ import { Link, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
 import LinkDetailPage from "./pages/LinkDetailPage.jsx";
 
+// Define el encabezado común y la página que corresponde a cada URL.
+// Link cambia de ruta dentro de la SPA; la ruta * muestra páginas desconocidas.
 export default function App() {
   return (
     <>

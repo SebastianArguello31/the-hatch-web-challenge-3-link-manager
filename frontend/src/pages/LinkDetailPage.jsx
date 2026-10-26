@@ -9,18 +9,22 @@ import CommentForm from "../components/CommentForm.jsx";
 import { getLink, getComments } from "../services/api.js";
 
 export default function LinkDetailPage() {
+    // Obtiene el parámetro :id de la ruta /links/:id.
     const { id } = useParams();
 
+    // Una key diferente reinicia el detalle y sus formularios al cambiar de enlace.
     return <LinkDetail key={id} linkId={id} />;
 }
 
 function LinkDetail({ linkId }) {
+    // Cada estado representa un dato visible: enlace, comentarios, carga y error.
     const [link, setLink] = useState(null);
     const [comments, setComments] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    // Consulta la API para el enlace recibido mediante props.
     useEffect(() => {
         let active = true;
 
@@ -46,12 +50,14 @@ function LinkDetail({ linkId }) {
 
         loadDetail();
 
+        // Evita aplicar respuestas pendientes después de abandonar este detalle.
         return () => {
             active = false;
         };
     }, [linkId]);
 
     function handleCommentCreated(comment) {
+        // Copia la lista anterior y añade la respuesta del servidor sin mutar el estado.
         setComments((previousComments) => [
             ...previousComments,
             comment,
@@ -59,12 +65,14 @@ function LinkDetail({ linkId }) {
     }
 
     function handleScoreChange(score) {
+        // Conserva los datos del enlace y reemplaza solo la puntuación confirmada.
         setLink((previousLink) => ({
             ...previousLink,
             score,
         }));
     }
 
+    // Estas salidas impiden leer link.title antes de que exista un enlace cargado.
     if (loading) {
         return (
             <section>

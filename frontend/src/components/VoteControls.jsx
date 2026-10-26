@@ -1,12 +1,15 @@
 import { useRef, useState } from "react";
 import { voteLink } from "../services/api.js";
 
+// Recibe la puntuación del padre y le comunica el valor confirmado por el servidor.
 export default function VoteControls({ linkId, score, onScoreChange, }) {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
     const [notice, setNotice] = useState("");
+    // Impide iniciar otro voto mientras el anterior sigue pendiente.
     const submitting = useRef(false);
 
+    // value es 1 o -1. La suma se realiza en PostgreSQL, no en el navegador.
     async function handleVote(value) {
         if (submitting.current) {
             return;
@@ -29,6 +32,7 @@ export default function VoteControls({ linkId, score, onScoreChange, }) {
             setSaving(false);
         }
 
+        // Actualiza la pantalla solo cuando la API confirma el voto.
         onScoreChange(result.score);
         setNotice("Voto registrado.");
     }
