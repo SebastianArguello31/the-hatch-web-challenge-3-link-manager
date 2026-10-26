@@ -1,6 +1,8 @@
 import { pool } from "../config/database.js";
 import { findOrCreateTag } from "./tagRepository.js";
 
+// $1 recibe el filtro por separado del SQL; nunca se concatena texto del usuario.
+// json_agg reúne las etiquetas y COALESCE devuelve [] si no hay ninguna.
 export async function findAllLinks(tag) {
     const result = await pool.query(
         `
@@ -39,6 +41,7 @@ export async function findAllLinks(tag) {
     return result.rows;
 }
 
+// Devuelve el enlace con sus etiquetas, o null si no existe.
 export async function findLinkById(id) {
     const result = await pool.query(
         `
@@ -67,6 +70,8 @@ export async function findLinkById(id) {
     return result.rows[0] ?? null;
 }
 
+// La transacción guarda enlace, etiquetas y relaciones como una sola operación.
+// Todas sus consultas deben usar la misma conexión (client).
 export async function insertLinkWithTags({ title, url, description, tags, }) {
     const client = await pool.connect();
 
@@ -85,6 +90,7 @@ export async function insertLinkWithTags({ title, url, description, tags, }) {
         const link = result.rows[0];
         const savedTags = [];
 
+        // Un orden fijo evita bloqueos cruzados entre creaciones con las mismas etiquetas.
         for (const name of [...tags].sort()) {
             const tag = await findOrCreateTag(client, name);
 
@@ -106,13 +112,16 @@ export async function insertLinkWithTags({ title, url, description, tags, }) {
             tags: savedTags.sort(),
         };
     } catch (error) {
+        // Conserva el error original incluso si también falla el rollback.
         await client.query("ROLLBACK").catch(() => {});
         throw error;
     } finally {
+        // Devuelve la conexión al pool tanto al guardar como al fallar.
         client.release();
     }
 }
 
+// PostgreSQL incrementa la puntuación de forma atómica para no perder votos simultáneos.
 export async function updateLinkScore(id, value) {
     const result = await pool.query(
         `

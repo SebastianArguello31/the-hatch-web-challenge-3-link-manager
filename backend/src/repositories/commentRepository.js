@@ -1,5 +1,6 @@
 import { pool } from "../config/database.js";
 
+// Orden cronológico; el ID resuelve empates entre fechas iguales.
 export async function findCommentsByLinkId(linkId) {
     const result = await pool.query(
         `
@@ -14,6 +15,7 @@ export async function findCommentsByLinkId(linkId) {
     return result.rows;
 }
 
+// Los parámetros se envían separados del SQL. RETURNING devuelve el comentario creado.
 export async function insertComment({ linkId, author, content }) {
     const result = await pool.query(
         `

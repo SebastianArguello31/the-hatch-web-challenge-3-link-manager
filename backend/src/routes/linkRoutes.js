@@ -2,13 +2,17 @@ import { Router } from "express";
 import { listLinks, getLink, createLink, voteLink, } from "../services/linkService.js";
 import { listComments, createComment, } from "../services/commentService.js";
 
+// app.js añade el prefijo /api/links a estas rutas.
+// Las rutas traducen HTTP a llamadas de servicio; Express 5 propaga sus errores async.
 const router = Router();
 
+// El filtro opcional llega en la URL, por ejemplo: /api/links?tag=react.
 router.get("/", async (req, res) => {
     const links = await listLinks(req.query.tag);
     res.json(links);
 });
 
+// 201 indica creación; Location informa dónde consultar el nuevo enlace.
 router.post("/", async (req, res) => {
     const link = await createLink(req.body);
 
@@ -17,6 +21,7 @@ router.post("/", async (req, res) => {
         .json(link);
 });
 
+// Los comentarios y votos pertenecen al enlace identificado por :id.
 router.get("/:id/comments", async (req, res) => {
     const comments = await listComments(req.params.id);
     res.json(comments);

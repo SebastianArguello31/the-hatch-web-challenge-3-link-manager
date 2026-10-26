@@ -1,4 +1,7 @@
+// Express reconoce un manejador de errores por estos cuatro parámetros.
+// Unifica las respuestas y oculta los detalles internos de los errores 500.
 export function errorHandler(error, req, res, next) {
+    // No se puede enviar otra respuesta si la primera ya comenzó.
     if (res.headersSent) {
         return next(error);
     }
@@ -15,6 +18,7 @@ export function errorHandler(error, req, res, next) {
         });
     }
 
+    // Solo expone mensajes de errores de cliente; los demás se tratan como internos.
     const status = Number.isInteger(error.status)
         && error.status >= 400
         && error.status < 500
