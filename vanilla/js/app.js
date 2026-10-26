@@ -286,7 +286,7 @@ async function handleCreateLink(event) {
     setFormBusy(elements.linkForm, true, "Guardando…", "Guardar enlace");
 
     try {
-        await createLink(data);
+        const link = await createLink(data);
         elements.linkForm.reset();
 
         if (!isCurrentView(version)) {
@@ -294,13 +294,7 @@ async function handleCreateLink(event) {
         }
 
         elements.filter.value = "";
-        await showRoute({ focus: false });
-
-        if (!elements.home.hidden) {
-            elements.status.textContent = elements.error.hidden
-                ? "Enlace guardado. Listado actualizado."
-                : "Enlace guardado, pero no se pudo actualizar el listado.";
-        }
+        window.location.hash = `#/links/${link.id}`;
     } catch (error) {
         if (isCurrentView(version)) {
             showError(elements.linkFormError, error.message);
