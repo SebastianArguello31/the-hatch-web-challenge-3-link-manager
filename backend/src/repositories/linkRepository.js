@@ -85,7 +85,7 @@ export async function insertLinkWithTags({ title, url, description, tags, }) {
         const link = result.rows[0];
         const savedTags = [];
 
-        for (const name of tags) {
+        for (const name of [...tags].sort()) {
             const tag = await findOrCreateTag(client, name);
 
             await client.query(
@@ -106,7 +106,7 @@ export async function insertLinkWithTags({ title, url, description, tags, }) {
             tags: savedTags.sort(),
         };
     } catch (error) {
-        await client.query("ROLLBACK");
+        await client.query("ROLLBACK").catch(() => {});
         throw error;
     } finally {
         client.release();
