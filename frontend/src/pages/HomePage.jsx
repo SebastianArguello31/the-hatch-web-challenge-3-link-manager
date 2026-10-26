@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import LinkCard from "../components/LinkCard.jsx";
 import LinkForm from "../components/LinkForm.jsx";
@@ -7,116 +8,79 @@ import TagFilter from "../components/TagFilter.jsx";
 import { getLinks, getTags } from "../services/api.js";
 
 export default function HomePage() {
+    const navigate = useNavigate();
+
+    const [links, setLinks] = useState([]);
+    const [tags, setTags] = useState([]);
     const [selectedTag, setSelectedTag] = useState("");
-    const [revision, setRevision] = useState(0);
-    const [notice, setNotice] = useState("");
 
-    const [result, setResult] = useState({
-        links: [],
-        tags: [],
-        error: "",
-        tag: null,
-        revision: -1,
-    });
-
-    const loading = (result.tag !== selectedTag || result.revision !== revision);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        const controller = new AbortController();
+        let active = true;
 
-        async function loadData() {
+        async function loadLinks() {
+            setLoading(true);
+            setError("");
+
             try {
-                const [links, tags] = await Promise.all([
-                    getLinks(selectedTag, controller.signal),
-                    getTags(controller.signal),
-                ]);
+                const loadedLinks = await getLinks(selectedTag);
+                const loadedTags = await getTags();
 
-                if (controller.signal.aborted) {
-                    return;
+                if (active) {
+                    setLinks(loadedLinks);
+                    setTags(loadedTags);
                 }
-
-                setResult({
-                    links,
-                    tags,
-                    error: "",
-                    tag: selectedTag,
-                    revision,
-                });
             } catch (error) {
-                if (controller.signal.aborted) {
-                    return;
+                if (active) {
+                    setError(error.message);
                 }
-
-                setResult((previous) => ({
-                    ...previous,
-                    links: [],
-                    error: error.message,
-                    tag: selectedTag,
-                    revision,
-                }));
+            } finally {
+                if (active) {
+                    setLoading(false);
+                }
             }
         }
 
-        loadData();
+        loadLinks();
 
         return () => {
-            controller.abort();
+            active = false;
         };
-    }, [selectedTag, revision]);
+    }, [selectedTag]);
 
     function handleFilterChange(tag) {
-        setNotice("");
+        setLoading(true);
         setSelectedTag(tag);
     }
 
-    function handleCreated() {
-        setNotice("Enlace guardado.");
-        setSelectedTag("");
-        setRevision((previous) => previous + 1);
-    }
-
-    function retryLoading() {
-        setRevision((previous) => previous + 1);
+    function handleCreated(link) {
+        navigate(`/links/${link.id}`);
     }
 
     return (
         <section>
             <h1>Mis enlaces</h1>
 
-            <p role="status" aria-live="polite">
-                {notice}
-            </p>
-
             <LinkForm onCreated={handleCreated} />
 
             <section aria-labelledby="list-title">
                 <h2 id="list-title">Recursos guardados</h2>
 
-                <TagFilter
-                    tags={result.tags}
-                    value={selectedTag}
-                    onChange={handleFilterChange}
-                    disabled={loading && result.tags.length === 0}
-                />
+                <TagFilter tags={tags} value={selectedTag} onChange={handleFilterChange} disabled={loading}/>
 
                 <div aria-busy={loading}>
-                    {loading ? (
-                        <p role="status">Cargando enlaces…</p>
-                    ) : result.error ? (
-                        <div>
-                            <p role="alert">{result.error}</p>
-                            <button type="button" onClick={retryLoading}>Reintentar carga</button>
-                        </div>
-                    ) : result.links.length === 0 ? (
-                        <p>
-                            {selectedTag
-                                ? "No hay enlaces con esta etiqueta."
-                                : "Todavía no hay enlaces. Guarda el primero."}
-                        </p>
-                    ) : (
+                    {loading && (<p role="status">Cargando enlaces…</p>)}
+
+                    {!loading && error && (<p role="alert">{error}</p>)}
+
+                    {!loading && !error && links.length === 0 && (<p>No hay enlaces para mostrar.</p>)}
+
+                    {!loading && !error && links.length > 0 && (
                         <div className="card-grid">
-                            {result.links.map((link) => (
-                                <LinkCard key={link.id} link={link} />
+                            {links.map((link) => (
+                                <LinkCard key={link.id} link={link}/>
                             ))}
                         </div>
                     )}
