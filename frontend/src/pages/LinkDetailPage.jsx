@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import CommentList from "../components/CommentList.jsx";
 import CommentForm from "../components/CommentForm.jsx";
 import VoteControls from "../components/VoteControls.jsx";
+import LinkContent from "../components/LinkContent.jsx";
 
 import { getLink, getComments } from "../services/api.js";
 
@@ -125,18 +126,6 @@ function LinkDetailContent({ linkId }) {
 
     const { link, comments } = result;
 
-    let externalUrl = null;
-
-    try {
-        const parsed = new URL(link.url);
-
-        if (["http:", "https:"].includes(parsed.protocol)) {
-            externalUrl = parsed.href;
-        }
-    } catch {
-        externalUrl = null;
-    }
-
     return (
         <section>
             <Link to="/">← Volver al listado</Link>
@@ -144,19 +133,7 @@ function LinkDetailContent({ linkId }) {
             <article className="panel">
                 <h1>{link.title}</h1>
 
-                {externalUrl && (
-                    <a href={externalUrl} target="_blank" rel="noopener noreferrer">Visitar recurso ↗</a>
-                )}
-
-                <p className="link-description">
-                    {link.description || "Sin descripción."}
-                </p>
-
-                <ul className="tag-list" aria-label="Etiquetas">
-                    {link.tags.map((tag) => (
-                        <li key={tag}>{tag}</li>
-                    ))}
-                </ul>
+                <LinkContent link={link} />
 
                 <p className="card-meta">
                     Guardado el{" "}
