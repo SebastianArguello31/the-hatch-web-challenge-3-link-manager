@@ -1,13 +1,16 @@
+// textContent muestra texto sin interpretar como HTML lo que provenga del usuario.
 export function showError(element, message) {
     element.textContent = message;
     element.hidden = false;
 }
 
+// Limpia el mensaje anterior antes de intentar otra operación.
 export function clearError(element) {
     element.textContent = "";
     element.hidden = true;
 }
 
+// Desactiva el envío y cambia su texto mientras una operación está pendiente.
 export function setFormBusy(form, busy, busyLabel, normalLabel) {
     const button = form.querySelector('button[type="submit"]');
 
@@ -15,6 +18,7 @@ export function setFormBusy(form, busy, busyLabel, normalLabel) {
     button.textContent = busy ? busyLabel : normalLabel;
 }
 
+// Quita primero la URL anterior y solo activa destinos HTTP/HTTPS válidos.
 export function setExternalUrl(anchor, url) {
     anchor.removeAttribute("href");
     anchor.textContent = "URL no disponible";
@@ -35,6 +39,7 @@ export function setExternalUrl(anchor, url) {
     }
 }
 
+// Sustituye las etiquetas visibles para no acumular elementos al cambiar de enlace.
 export function fillTags(list, tags) {
     list.replaceChildren();
 

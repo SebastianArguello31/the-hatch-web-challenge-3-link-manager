@@ -1,6 +1,7 @@
 import { getLinks, getLink, getTags, createLink, getComments, createComment, voteLink, } from "./api.js";
 import { showError, clearError, setFormBusy, setExternalUrl, fillTags, } from "./ui.js";
 
+// Referencias a los elementos del HTML que esta aplicación actualiza.
 const elements = {
     home: document.querySelector("#home-view"),
     detail: document.querySelector("#detail-view"),
@@ -24,13 +25,16 @@ const elements = {
     commentError: document.querySelector("#comment-form-error"),
 };
 
+// El controlador cancela lecturas; la versión identifica a qué vista pertenece cada respuesta.
 let viewController;
 let viewVersion = 0;
 let currentLinkId = null;
+// Estas banderas impiden iniciar dos envíos iguales mientras se espera al servidor.
 let savingLink = false;
 let savingComment = false;
 let savingVote = false;
 
+// No permite comentar ni votar hasta tener un enlace cargado.
 function updateDetailButtons() {
     const unavailable = currentLinkId === null;
 
@@ -45,6 +49,7 @@ function updateDetailButtons() {
     );
 }
 
+// Construye las tarjetas con nodos DOM y texto, sin insertar HTML del usuario.
 function renderLinks(links) {
     elements.links.replaceChildren();
 
@@ -89,6 +94,7 @@ function renderLinks(links) {
     }
 }
 
+// Reconstruye las opciones y conserva el filtro si la etiqueta sigue disponible.
 function renderTagFilter(tags, selectedTag) {
     const all = document.createElement("option");
     all.value = "";
@@ -106,6 +112,7 @@ function renderTagFilter(tags, selectedTag) {
     elements.filter.value = tags.some((tag) => tag.name === selectedTag) ? selectedTag : "";
 }
 
+// Reemplaza la lista completa con los comentarios recibidos del backend.
 function renderComments(comments) {
     elements.comments.replaceChildren();
 
@@ -134,6 +141,7 @@ function renderComments(comments) {
     }
 }
 
+// Rellena el detalle reutilizando las utilidades de URL y etiquetas.
 function renderDetail(link, comments) {
     elements.detailTitle.textContent = link.title;
     elements.description.textContent = link.description || "Sin descripción.";
@@ -144,11 +152,14 @@ function renderDetail(link, comments) {
     renderComments(comments);
 }
 
+// Descarta respuestas antiguas, incluidas las de envíos que no se cancelaron.
 function isCurrentView(version) {
     return version === viewVersion;
 }
 
+// Interpreta #/ y #/links/:id; cambia secciones sin recargar el documento.
 async function showRoute({ focus = true } = {}) {
+    // Deja de esperar las lecturas de la vista anterior antes de iniciar otras.
     viewController?.abort();
 
     const controller = new AbortController();
@@ -178,6 +189,7 @@ async function showRoute({ focus = true } = {}) {
 
             const selectedTag = elements.filter.value;
 
+            // Ambas consultas son independientes y pueden ejecutarse en paralelo.
             const [tags, links] = await Promise.all([
                 getTags(controller.signal),
                 getLinks(selectedTag, controller.signal),
@@ -191,6 +203,7 @@ async function showRoute({ focus = true } = {}) {
             renderLinks(links);
             elements.status.textContent = `${links.length} enlace(s) encontrado(s).`;
 
+            // Lleva el foco al título para facilitar la navegación con teclado.
             if (focus) {
                 elements.homeTitle.focus();
             }
@@ -243,7 +256,9 @@ async function showRoute({ focus = true } = {}) {
     }
 }
 
+// Lee el formulario, guarda el enlace y actualiza el listado si seguimos en esa vista.
 async function handleCreateLink(event) {
+    // Evita el envío HTML tradicional que recargaría toda la página.
     event.preventDefault();
 
     if (savingLink) {
@@ -296,6 +311,8 @@ async function handleCreateLink(event) {
     }
 }
 
+// Guarda primero el comentario y luego vuelve a consultar la lista.
+// Se distinguen los errores de guardado de los fallos al actualizar la pantalla.
 async function handleCreateComment(event) {
     event.preventDefault();
 
@@ -350,6 +367,7 @@ async function handleCreateComment(event) {
     }
 }
 
+// Muestra la puntuación que confirma la API, siempre que siga abierta la misma vista.
 async function handleVote(value) {
     if (savingVote || currentLinkId === null) {
         return;
@@ -380,12 +398,14 @@ async function handleVote(value) {
     }
 }
 
+// Conecta las acciones del HTML con sus funciones, una sola vez al iniciar.
 elements.linkForm.addEventListener("submit", handleCreateLink);
 elements.commentForm.addEventListener("submit", handleCreateComment);
 elements.filter.addEventListener("change", () => { showRoute({ focus: false }); });
 elements.positive.addEventListener("click", () => handleVote(1));
 elements.negative.addEventListener("click", () => handleVote(-1));
 
+// También responde a Atrás/Adelante del navegador cuando cambia el fragmento #.
 window.addEventListener("hashchange", () => showRoute());
 
 showRoute({ focus: false });

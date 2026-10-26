@@ -6,6 +6,7 @@
     <meta name="description" content="Guarda, organiza y comenta tus recursos favoritos."/>
     <title>El Gran Desafío del Componente</title>
     <link rel="stylesheet" href="./css/styles.css" />
+    <!-- El módulo conecta los eventos y carga la vista indicada por el fragmento #. -->
     <script type="module" src="./js/app.js"></script>
   </head>
 
@@ -16,9 +17,11 @@
     </header>
 
     <main class="container">
+      <!-- Los cambios de estado y errores se anuncian también a lectores de pantalla. -->
       <p id="page-status" role="status" aria-live="polite"></p>
       <p id="page-error" role="alert" hidden></p>
 
+      <!-- Vista del listado: formulario de alta, filtro y tarjetas creadas por JavaScript. -->
       <section id="home-view" aria-labelledby="home-title">
         <h1 id="home-title" tabindex="-1">Mis enlaces</h1>
 
@@ -56,6 +59,7 @@
         </section>
       </section>
 
+      <!-- El detalle permanece oculto hasta que app.js carga el enlace y sus comentarios. -->
       <section id="detail-view" aria-labelledby="detail-title" hidden>
         <a href="#/">← Volver al listado</a>
 
@@ -90,6 +94,7 @@
 
           <h3>Añadir comentario</h3>
 
+          <!-- Los atributos name permiten que FormData lea los campos al enviar. -->
           <form id="comment-form">
             <label for="comment-author">Tu nombre</label>
             <input id="comment-author" name="author" type="text" maxlength="100" autocomplete="name" required/>
