@@ -1,4 +1,5 @@
 import { listLinks, getLink, createLink, } from "../services/linkService.js";
+import { parseLinkId } from "./parseLinkId.js";
 
 export async function list(req, res, next) {
     try {
@@ -11,16 +12,9 @@ export async function list(req, res, next) {
 
 export async function detail(req, res, next) {
     try {
-        const rawId = req.params.id;
-        const id = Number(rawId);
-
-        if (!/^[1-9]\d*$/.test(rawId) || !Number.isSafeInteger(id) || id > 2147483647) {
-            return res.status(400).json({
-                error: "El identificador debe ser un entero positivo válido.",
-            });
-        }
-
+        const id = parseLinkId(req.params.id);
         const link = await getLink(id);
+
         res.json(link);
     } catch (error) {
         next(error);
