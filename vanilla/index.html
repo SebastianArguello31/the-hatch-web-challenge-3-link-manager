@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Guarda, organiza y comenta tus recursos favoritos."/>
+    <title>El Gran Desafío del Componente</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <!-- El módulo conecta los eventos y carga la vista indicada por el fragmento #. -->
+    <script type="module" src="./js/app.js"></script>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <a href="#/" class="brand">Director de Enlaces</a>
+      <p>Un lugar para organizar los recursos de internet.</p>
+    </header>
+
+    <main class="container">
+      <!-- Los cambios de estado y errores se anuncian también a lectores de pantalla. -->
+      <p id="page-status" role="status" aria-live="polite"></p>
+      <p id="page-error" role="alert" hidden></p>
+
+      <!-- Vista del listado: formulario de alta, filtro y tarjetas creadas por JavaScript. -->
+      <section id="home-view" aria-labelledby="home-title">
+        <h1 id="home-title" tabindex="-1">Mis enlaces</h1>
+
+        <section class="panel" aria-labelledby="create-title">
+          <h2 id="create-title">Guardar un enlace</h2>
+
+          <form id="link-form">
+            <label for="link-title">Título</label>
+            <input id="link-title" name="title" type="text" maxlength="200" required/>
+
+            <label for="link-url">URL</label>
+            <input id="link-url" name="url" type="url" placeholder="https://ejemplo.com" required/>
+
+            <label for="link-description">Descripción (opcional)</label>
+            <textarea id="link-description" name="description" rows="3"></textarea>
+
+            <label for="link-tags">Etiquetas</label>
+            <input id="link-tags" name="tags" type="text" aria-describedby="tags-help" required/>
+            <small id="tags-help">Sepáralas con comas. Ejemplo: javascript, react</small>
+
+            <p id="link-form-error" role="alert" hidden></p>
+            <button type="submit">Guardar enlace</button>
+          </form>
+        </section>
+
+        <section aria-labelledby="list-title">
+          <h2 id="list-title">Recursos guardados</h2>
+
+          <label for="tag-filter">Filtrar por etiqueta</label>
+          <select id="tag-filter">
+            <option value="">Todas las etiquetas</option>
+          </select>
+
+          <div id="link-list" class="card-grid"></div>
+        </section>
+      </section>
+
+      <!-- El detalle permanece oculto hasta que app.js carga el enlace y sus comentarios. -->
+      <section id="detail-view" aria-labelledby="detail-title" hidden>
+        <a href="#/">← Volver al listado</a>
+
+        <article class="panel">
+          <h1 id="detail-title" tabindex="-1"></h1>
+          <a id="detail-url" target="_blank" rel="noopener noreferrer">Visitar recurso ↗</a>
+
+          <p id="detail-description"></p>
+          <ul id="detail-tags" class="tag-list"></ul>
+
+          <div class="vote-controls">
+            <button id="vote-positive" type="button">Votar +1</button>
+
+            <p>
+              Puntuación:
+              <strong id="detail-score" aria-live="polite">0</strong>
+            </p>
+
+            <button id="vote-negative" type="button">Votar −1</button>
+          </div>
+
+          <p class="card-meta">
+            Los votos son anónimos. Una persona puede votar más de una vez.
+          </p>
+
+          <p id="vote-error" role="alert" hidden></p>
+        </article>
+
+        <section class="panel" aria-labelledby="comments-title">
+          <h2 id="comments-title">Comentarios</h2>
+          <ul id="comment-list" class="comment-list"></ul>
+
+          <h3>Añadir comentario</h3>
+
+          <!-- Los atributos name permiten que FormData lea los campos al enviar. -->
+          <form id="comment-form">
+            <label for="comment-author">Tu nombre</label>
+            <input id="comment-author" name="author" type="text" maxlength="100" autocomplete="name" required/>
+
+            <label for="comment-content">Comentario</label>
+            <textarea id="comment-content" name="content" rows="4" required></textarea>
+
+            <p id="comment-form-error" role="alert" hidden></p>
+            <button type="submit">Publicar comentario</button>
+          </form>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

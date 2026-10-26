@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (usa .env.example como plantilla)
+.env
+.env.*
+!.env.example
+
+# Bases de datos locales (por si quedó una de la versión inicial con SQLite)
+backend/data/
+*.db
+*.db-shm
+*.db-wal
+
+# Builds
+dist/
+
+# Logs y sistema
+*.log
+.DS_Store
+Thumbs.db

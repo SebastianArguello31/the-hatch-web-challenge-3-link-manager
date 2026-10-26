@@ -1,0 +1,202 @@
+/* Base visual: fuente, colores y altura de línea para toda la interfaz. */
+:root {
+  font-family: system-ui, sans-serif;
+  color: #172033;
+  background: #f4f6fa;
+  line-height: 1.5;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Respeta hidden aunque otra regla asigne display al elemento. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: #3730a3;
+  overflow-wrap: anywhere;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  border: 1px solid #8994a8;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  background: white;
+  color: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  background: #4338ca;
+  color: white;
+  border-color: #4338ca;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #3730a3;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+/* Hace visible el elemento activo al navegar con teclado. */
+:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+/* Encabezado y contenedor central compartidos por las dos vistas. */
+.site-header {
+  padding: 2rem max(1rem, calc((100% - 1100px) / 2));
+  background: #172033;
+  color: white;
+}
+
+.brand {
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* Superficies de los formularios, el detalle y las tarjetas del listado. */
+.panel,
+.link-card {
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #dce1ea;
+  border-radius: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.panel {
+  margin: 1.5rem 0;
+}
+
+form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+form label {
+  font-weight: 600;
+}
+
+form button {
+  justify-self: start;
+  margin-top: 0.5rem;
+}
+
+small,
+.card-meta {
+  color: #536078;
+}
+
+/* Ajusta automáticamente el número de columnas al espacio disponible. */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.link-card h3 {
+  margin-top: 0;
+}
+
+/* Las etiquetas y los controles pueden saltar de línea en pantallas estrechas. */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.tag-list li {
+  padding: 0.2rem 0.65rem;
+  border-radius: 1rem;
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+.vote-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.comment-list {
+  list-style: none;
+  padding: 0;
+}
+
+.comment-list li {
+  padding: 1rem 0;
+  border-bottom: 1px solid #dce1ea;
+  overflow-wrap: anywhere;
+}
+
+/* Conserva los saltos de línea escritos en descripciones y comentarios. */
+.comment-list p,
+#detail-description,
+.link-description {
+  white-space: pre-wrap;
+}
+
+/* Destaca los mensajes de error que están visibles. */
+[role="alert"]:not([hidden]) {
+  padding: 0.75rem;
+  background: #fff1f2;
+  color: #9f1239;
+  border-left: 4px solid #be123c;
+}
+
+/* Reduce espacios y amplía los botones en dispositivos pequeños. */
+@media (max-width: 600px) {
+  .panel,
+  .link-card {
+    padding: 1rem;
+  }
+
+  form button {
+    width: 100%;
+  }
+}
