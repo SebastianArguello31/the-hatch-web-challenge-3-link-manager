@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import { pool } from "./config/database.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
+import linkRoutes from "./routes/linkRoutes.js";
+import tagRoutes from "./routes/tagRoutes.js";
 
 const app = express();
 const port = Number(process.env.PORT ?? 3000);
@@ -17,6 +19,9 @@ const allowedOrigins = (
 
 app.use(cors({ origin: allowedOrigins, }));
 app.use(express.json({ limit: "100kb" }));
+
+app.use("/api/links", linkRoutes);
+app.use("/api/tags", tagRoutes);
 
 app.use((req, res) => {
     res.status(404).json({
