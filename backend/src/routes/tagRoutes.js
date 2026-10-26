@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { list } from "../controllers/tagController.js";
+import { findAllTags } from "../repositories/tagRepository.js";
 
 const router = Router();
 
-router.get("/", list);
+router.get("/", async (req, res) => {
+    const tags = await findAllTags();
+    res.json(tags);
+});
 
 export default router;

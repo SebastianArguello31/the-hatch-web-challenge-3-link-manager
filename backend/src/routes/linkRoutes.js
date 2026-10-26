@@ -1,16 +1,40 @@
 import { Router } from "express";
-import { list, detail, create, vote, } from "../controllers/linkController.js";
-import { list as listComments, create as createComment, } from "../controllers/commentController.js";
+import { listLinks, getLink, createLink, voteLink, } from "../services/linkService.js";
+import { listComments, createComment, } from "../services/commentService.js";
 
 const router = Router();
 
-router.get("/", list);
-router.post("/", create);
+router.get("/", async (req, res) => {
+    const links = await listLinks(req.query.tag);
+    res.json(links);
+});
 
-router.get("/:id/comments", listComments);
-router.post("/:id/comments", createComment);
-router.post("/:id/vote", vote);
+router.post("/", async (req, res) => {
+    const link = await createLink(req.body);
 
-router.get("/:id", detail);
+    res.status(201)
+        .location(`/api/links/${link.id}`)
+        .json(link);
+});
+
+router.get("/:id/comments", async (req, res) => {
+    const comments = await listComments(req.params.id);
+    res.json(comments);
+});
+
+router.post("/:id/comments", async (req, res) => {
+    const comment = await createComment(req.params.id, req.body);
+    res.status(201).json(comment);
+});
+
+router.post("/:id/vote", async (req, res) => {
+    const result = await voteLink(req.params.id, req.body);
+    res.json(result);
+});
+
+router.get("/:id", async (req, res) => {
+    const link = await getLink(req.params.id);
+    res.json(link);
+});
 
 export default router;
