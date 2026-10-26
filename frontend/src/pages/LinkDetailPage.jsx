@@ -1,101 +1,67 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import LinkContent from "../components/LinkContent.jsx";
+import VoteControls from "../components/VoteControls.jsx";
 import CommentList from "../components/CommentList.jsx";
 import CommentForm from "../components/CommentForm.jsx";
-import VoteControls from "../components/VoteControls.jsx";
-import LinkContent from "../components/LinkContent.jsx";
 
 import { getLink, getComments } from "../services/api.js";
 
 export default function LinkDetailPage() {
     const { id } = useParams();
-    const linkId = Number(id);
 
-    const validId = (/^[1-9]\d*$/.test(id ?? "") && Number.isSafeInteger(linkId) && linkId <= 2147483647);
-
-    if (!validId) {
-        return (
-            <section>
-                <h1>Enlace no válido</h1>
-                <p role="alert">
-                    El identificador debe ser un entero positivo válido.
-                </p>
-                <Link to="/">Volver al listado</Link>
-            </section>
-        );
-    }
-
-    return <LinkDetailContent key={linkId} linkId={linkId} />;
+    return <LinkDetail key={id} linkId={id} />;
 }
 
-function LinkDetailContent({ linkId }) {
-    const [revision, setRevision] = useState(0);
+function LinkDetail({ linkId }) {
+    const [link, setLink] = useState(null);
+    const [comments, setComments] = useState([]);
 
-    const [result, setResult] = useState({
-        link: null,
-        comments: [],
-        error: "",
-        revision: -1,
-    });
-
-    const loading = result.revision !== revision;
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        const controller = new AbortController();
+        let active = true;
 
         async function loadDetail() {
             try {
-                const [link, comments] = await Promise.all([
-                    getLink(linkId, controller.signal),
-                    getComments(linkId, controller.signal),
-                ]);
+                const loadedLink = await getLink(linkId);
+                const loadedComments = await getComments(linkId);
 
-                if (controller.signal.aborted) {
-                    return;
+                if (active) {
+                    setLink(loadedLink);
+                    setComments(loadedComments);
                 }
-
-                setResult({
-                    link,
-                    comments,
-                    error: "",
-                    revision,
-                });
             } catch (error) {
-                if (controller.signal.aborted) {
-                    return;
+                if (active) {
+                    setError(error.message);
                 }
-
-                setResult({
-                    link: null,
-                    comments: [],
-                    error: error.message,
-                    revision,
-                });
+            } finally {
+                if (active) {
+                    setLoading(false);
+                }
             }
         }
 
         loadDetail();
 
         return () => {
-            controller.abort();
+            active = false;
         };
-    }, [linkId, revision]);
+    }, [linkId]);
 
     function handleCommentCreated(comment) {
-        setResult((previous) => ({
-            ...previous,
-            comments: [...previous.comments, comment],
-        }));
+        setComments((previousComments) => [
+            ...previousComments,
+            comment,
+        ]);
     }
 
     function handleScoreChange(score) {
-        setResult((previous) => ({
-            ...previous,
-            link: {
-                ...previous.link,
-                score,
-            },
+        setLink((previousLink) => ({
+            ...previousLink,
+            score,
         }));
     }
 
@@ -103,28 +69,23 @@ function LinkDetailContent({ linkId }) {
         return (
             <section>
                 <Link to="/">← Volver al listado</Link>
+
                 <h1>Detalle del enlace</h1>
-                <p role="status">Cargando enlace y comentarios…</p>
+                <p role="status">Cargando enlace…</p>
             </section>
         );
     }
 
-    if (result.error) {
+    if (error) {
         return (
             <section>
                 <Link to="/">← Volver al listado</Link>
+
                 <h1>No se pudo cargar el enlace</h1>
-
-                <p role="alert">{result.error}</p>
-
-                <button type="button" onClick={() => setRevision((previous) => previous + 1)}>
-                    Reintentar carga
-                </button>
+                <p role="alert">{error}</p>
             </section>
         );
     }
-
-    const { link, comments } = result;
 
     return (
         <section>
@@ -142,7 +103,7 @@ function LinkDetailContent({ linkId }) {
                     </time>
                 </p>
 
-                <VoteControls linkId={link.id} score={link.score} onScoreChange={handleScoreChange}/>
+                <VoteControls linkId={link.id} score={link.score} onScoreChange={handleScoreChange} />
             </article>
 
             <section className="panel" aria-labelledby="comments-title">
