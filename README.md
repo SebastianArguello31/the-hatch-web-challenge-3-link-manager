@@ -1,4 +1,4 @@
-# Director de Enlaces 
+# Director de Enlaces
 
 Aplicación para guardar enlaces, organizarlos por etiquetas, añadir comentarios y votar.
 
@@ -20,7 +20,7 @@ Ambas utilizan el mismo backend y la misma base de datos.
 
 ## Instalación
 
-Desde la raíz del proyecto:
+Desde la raíz del repositorio (la carpeta que contiene `backend`, `frontend` y `vanilla`):
 
 ```bash
 cd backend
@@ -32,7 +32,7 @@ cd ..
 
 ## Base de datos
 
-Crea la base y sus tablas:
+Desde la raíz del repositorio, crea la base y sus tablas:
 
 ```bash
 psql -U postgres -c "CREATE DATABASE link_organizer;"
@@ -126,11 +126,11 @@ comentarios y votos. La navegación no recarga toda la página.
 
 1. Crea una base PostgreSQL en el proveedor elegido y aplica `backend/database/schema.sql`.
 2. Publica el backend con `backend` como directorio de trabajo, `npm install` para instalar y `npm start` para ejecutar.
-3. Configura sus variables de entorno con los datos del proveedor.Si exige TLS, configura la conexión según sus instrucciones.
- 4. Configura `VITE_API_URL` con la URL pública del backend, incluyendo `/api`.
+3. Configura sus variables de entorno con los datos del proveedor. Si exige TLS, configura la conexión según sus instrucciones.
+4. Configura `VITE_API_URL` con la URL pública del backend, incluyendo `/api`.
 5. Ejecuta `npm run build` dentro de `frontend` y publica la carpeta `frontend/dist`.
-6. Configura el hosting para servir `index.html` cuando se visiteuna ruta de React como `/links/1`.
- 7. Para publicar Vanilla, cambia la URL de la API en `vanilla/js/api.js` y publica la carpeta `vanilla`.
+6. Configura el hosting para servir `index.html` cuando se visite una ruta de React como `/links/1`.
+7. Para publicar Vanilla, cambia la URL de la API en `vanilla/js/api.js` y publica la carpeta `vanilla`.
 8. Añade los orígenes públicos de las interfaces a `CLIENT_ORIGINS`.
 
 Si cambia `VITE_API_URL`, vuelve a compilar React.
