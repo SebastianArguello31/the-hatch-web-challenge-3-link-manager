@@ -1,4 +1,5 @@
 import { getLinks, getLink, getTags, createLink, getComments, createComment, voteLink, } from "./api.js";
+import { showError, clearError, setFormBusy, setExternalUrl, fillTags, } from "./ui.js";
 
 const elements = {
     home: document.querySelector("#home-view"),
@@ -30,23 +31,6 @@ let savingLink = false;
 let savingComment = false;
 let savingVote = false;
 
-function showError(element, message) {
-    element.textContent = message;
-    element.hidden = false;
-}
-
-function clearError(element) {
-    element.textContent = "";
-    element.hidden = true;
-}
-
-function setFormBusy(form, busy, busyLabel, normalLabel) {
-    const button = form.querySelector('button[type="submit"]');
-
-    button.disabled = busy;
-    button.textContent = busy ? busyLabel : normalLabel;
-}
-
 function updateDetailButtons() {
     const unavailable = currentLinkId === null;
 
@@ -59,35 +43,6 @@ function updateDetailButtons() {
         savingComment ? "Publicando…" : "Publicar comentario",
         "Publicar comentario"
     );
-}
-
-function setExternalUrl(anchor, url) {
-    anchor.removeAttribute("href");
-
-    try {
-        const parsed = new URL(url);
-
-        if (!["http:", "https:"].includes(parsed.protocol)) {
-            throw new Error("Protocolo no permitido.");
-        }
-
-        anchor.href = parsed.href;
-        anchor.target = "_blank";
-        anchor.rel = "noopener noreferrer";
-        anchor.textContent = "Visitar recurso ↗";
-    } catch {
-        anchor.textContent = "URL no disponible";
-    }
-}
-
-function fillTags(list, tags) {
-    list.replaceChildren();
-
-    for (const tag of tags) {
-        const item = document.createElement("li");
-        item.textContent = tag;
-        list.append(item);
-    }
 }
 
 function renderLinks(links) {
