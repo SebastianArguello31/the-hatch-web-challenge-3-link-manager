@@ -1,4 +1,4 @@
-import { listLinks, getLink, createLink, } from "../services/linkService.js";
+import { listLinks, getLink, createLink, voteLink, } from "../services/linkService.js";
 import { parseLinkId } from "./parseLinkId.js";
 
 export async function list(req, res, next) {
@@ -32,6 +32,24 @@ export async function create(req, res, next) {
         const link = await createLink(req.body);
 
         res.status(201).location(`/api/links/${link.id}`).json(link);
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function vote(req, res, next) {
+    try {
+        const id = parseLinkId(req.params.id);
+
+        if (req.body === null || typeof req.body !== "object" || Array.isArray(req.body)) {
+            return res.status(400).json({
+                error: "Debes enviar un objeto JSON con el voto.",
+            });
+        }
+
+        const result = await voteLink(id, req.body.value);
+
+        res.json(result);
     } catch (error) {
         next(error);
     }

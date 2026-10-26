@@ -112,3 +112,17 @@ export async function insertLinkWithTags({ title, url, description, tags, }) {
         client.release();
     }
 }
+
+export async function updateLinkScore(id, value) {
+    const result = await pool.query(
+        `
+            UPDATE links
+            SET score = score + $1
+            WHERE id = $2
+            RETURNING id, score
+        `,
+        [value, id]
+    );
+
+    return result.rows[0] ?? null;
+}

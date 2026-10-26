@@ -1,4 +1,4 @@
-import { findAllLinks, findLinkById, insertLinkWithTags, } from "../repositories/linkRepository.js";
+import { findAllLinks, findLinkById, insertLinkWithTags, updateLinkScore, } from "../repositories/linkRepository.js";
 
 function validationError(message) {
     const error = new Error(message);
@@ -97,4 +97,20 @@ export async function createLink(data) {
     const normalizedLink = normalizeLink(data);
 
     return insertLinkWithTags(normalizedLink);
+}
+
+export async function voteLink(id, value) {
+    if (value !== 1 && value !== -1) {
+        throw validationError("El voto debe ser el número 1 o -1.");
+    }
+
+    const result = await updateLinkScore(id, value);
+
+    if (!result) {
+        const error = new Error("El enlace solicitado no existe.");
+        error.status = 404;
+        throw error;
+    }
+
+    return result;
 }
